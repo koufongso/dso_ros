@@ -22,7 +22,7 @@ To access computed information in real-time, I recommend to implement your own O
 2. run 
 
 		export DSO_PATH=[PATH_TO_DSO]/dso
-		rosmake
+		catkin_make
 	
 
 
@@ -30,16 +30,10 @@ To access computed information in real-time, I recommend to implement your own O
 everything as described in the DSO project - only this is for real-time camera input.
 
 
-		rosrun dso_ros dso_live image:=image_raw \
+		rosrun dso_ros dso_live image:=[ros_image_topic] \
 			calib=XXXXX/camera.txt \
 			gamma=XXXXX/pcalib.txt \
 			vignette=XXXXX/vignette.png \
-
-
-## 3.1 Accessing Data.
-see the DSO Readme. As of now, there is no default ROS-based `Output3DWrapper` - you will have to write your own.
-
-
 
 
 # 4 Dependencies

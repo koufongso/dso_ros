@@ -36,6 +36,7 @@
 #include "util/Undistort.h"
 #include "IOWrapper/Pangolin/PangolinDSOViewer.h"
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
+#include "RosPublisher.h"
 
 
 #include <ros/ros.h>
@@ -64,7 +65,7 @@ void parseArgument(char* arg)
 		printf("saving to %s on finish!\n", saveFile.c_str());
 		return;
 	}
-
+	
 	if(1==sscanf(arg,"sampleoutput=%d",&option))
 	{
 		if(option==1)
@@ -214,25 +215,19 @@ int main( int argc, char** argv )
     fullSystem = new FullSystem();
     fullSystem->linearizeOperation=false;
 
+	ros::NodeHandle nh;
+    ros::Subscriber imgSub = nh.subscribe("image", 10, &vidCb);
+	ros::Publisher pcPub = nh.advertise<sensor_msgs::PointCloud2>("dso_pc2",10);
 
-    if(!disableAllDisplay)
-	    fullSystem->outputWrapper.push_back(new IOWrap::PangolinDSOViewer(
-	    		 (int)undistorter->getSize()[0],
-	    		 (int)undistorter->getSize()[1]));
-
-
-    if(useSampleOutput)
-        fullSystem->outputWrapper.push_back(new IOWrap::SampleOutputWrapper());
-
+	fullSystem->outputWrapper.push_back(new IOWrap::RosPublisher(pcPub));
 
     if(undistorter->photometricUndist != 0)
     	fullSystem->setGammaFunction(undistorter->photometricUndist->getG());
 
-    ros::NodeHandle nh;
-    ros::Subscriber imgSub = nh.subscribe("image", 1, &vidCb);
+
 
     ros::spin();
-    fullSystem->printResult(saveFile); 
+
     for(IOWrap::Output3DWrapper* ow : fullSystem->outputWrapper)
     {
         ow->join();
