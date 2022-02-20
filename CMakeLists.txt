@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   cv_bridge
+  tf
   tf2
 )
 
@@ -31,6 +32,7 @@ catkin_package(
     roscpp
     sensor_msgs
     cv_bridge
+    tf
     tf2
 )
 
